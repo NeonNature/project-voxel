@@ -47,7 +47,7 @@ function Cube(props) {
         const frontVector = new Vector3(
             0,
             0,
-            Number(forward) - Number(backward)
+            Number(backward) - Number(forward)
         );
         const sideVector = new Vector3(Number(left) - Number(right), 0, 0);
         direction
@@ -108,7 +108,7 @@ const DatGuiContainer = ({ options, setOptions }) => {
             <DatNumber
                 path="cameraZ"
                 label="Camera Z"
-                min={0}
+                min={-100}
                 max={100}
                 step={1}
             />
@@ -141,9 +141,9 @@ const Three = () => {
     const [options, setOptions] = useState({
         cameraX: 0,
         cameraY: 9,
-        cameraZ: 60,
-        rotationX: 0,
-        rotationY: 0,
+        cameraZ: -51,
+        rotationX: 0.5,
+        rotationY: Math.PI,
         rotationZ: 0,
     });
 
