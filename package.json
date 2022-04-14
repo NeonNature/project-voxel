@@ -36,6 +36,7 @@
     "gatsby-transformer-sharp": "^3.13.0",
     "prettier": "^2.3.2",
     "react": "^17.0.1",
+    "react-dat-gui": "^4.1.1",
     "react-dom": "^17.0.1",
     "react-helmet": "^6.1.0",
     "react-slick": "^0.28.1",
