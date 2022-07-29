@@ -2,17 +2,24 @@ import React, { Suspense, useState } from "react";
 import { container } from "./three.module.scss";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { PerspectiveCamera, Stage } from "@react-three/drei";
-import { Physics, usePlane, useBox } from "@react-three/cannon";
+import {
+    Physics,
+    usePlane,
+    useBox,
+    useSphere,
+    useRaycastVehicle,
+} from "@react-three/cannon";
 import * as THREE from "three";
 import DatGui, { DatNumber } from "react-dat-gui";
 import "/node_modules/react-dat-gui/dist/index.css";
 import { Vector3 } from "three";
-import { usePersonControls } from "./controls";
+import { usePersonControls } from "../utilities/controls";
+import Cat from "./Cat";
 
 function Plane(props) {
     const [ref] = usePlane(() => ({
         rotation: [-Math.PI / 2, 0, 0],
-        mass: 10,
+        mass: 100,
         type: "Static",
         ...props,
     }));
@@ -24,56 +31,12 @@ function Plane(props) {
     );
 }
 
-function Cube(props) {
-    const { camera } = useThree();
-    const { forward, backward, left, right } = usePersonControls();
-    const [ref, api] = useBox(() => ({
-        mass: 1,
-        position: [0, 5, 0],
-        type: "Dynamic",
-        ...props,
-    }));
-
-    const SPEED = 2;
-
-    const velocity = React.useRef([0, 0, 0]);
-    React.useEffect(() => {
-        api.velocity.subscribe((v) => (velocity.current = v));
-    }, [api.velocity]);
-
-    useFrame(() => {
-        // camera.position.copy(ref.current.position);
-        const direction = new Vector3();
-        const frontVector = new Vector3(
-            0,
-            0,
-            Number(backward) - Number(forward)
-        );
-        const sideVector = new Vector3(Number(left) - Number(right), 0, 0);
-        direction
-            .subVectors(frontVector, sideVector)
-            .normalize()
-            .multiplyScalar(SPEED)
-            .applyEuler(camera.rotation);
-
-        api.velocity.set(direction.x, velocity.current[1], direction.z);
-        ref.current.getWorldPosition(ref.current.position);
-    });
-
-    return (
-        <mesh ref={ref}>
-            <boxGeometry />
-            <meshStandardMaterial color="red" side={THREE.DoubleSide} />
-        </mesh>
-    );
-}
-
 const Composition = ({ options }) => {
     return (
         <>
             <Physics>
                 <Plane />
-                <Cube />
+                <Cat options={options} />
             </Physics>
             <PerspectiveCamera
                 position={[options.cameraX, options.cameraY, options.cameraZ]}
@@ -133,6 +96,13 @@ const DatGuiContainer = ({ options, setOptions }) => {
                 max={3.141592}
                 step={0.05}
             />
+            <DatNumber
+                path="catMass"
+                label="Cat Mass"
+                min={0}
+                max={100}
+                step={0.5}
+            />
         </DatGui>
     );
 };
@@ -145,6 +115,7 @@ const Three = () => {
         rotationX: 0.5,
         rotationY: Math.PI,
         rotationZ: 0,
+        catMass: 1,
     });
 
     return (
